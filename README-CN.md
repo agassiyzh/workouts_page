@@ -85,6 +85,8 @@ python3(python) scripts/xingzhe_sync.py 13333xxxx xxxx
 
 > 注：我增加了 行者 可以导出 gpx 功能, 执行如下命令，导出的 gpx 会加入到 GPX_OUT 中，方便上传到其它软件
 
+如果你想同步 `fit` 格式，增加命令 --fit
+
 ```python
 python3(python) scripts/xingzhe_sync.py ${your mobile or email} ${your password} --with-gpx
 ```

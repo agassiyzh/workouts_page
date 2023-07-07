@@ -64,6 +64,8 @@ python3(python) scripts/codoon_sync.py 54bxxxxxxx fefxxxxx-xxxx-xxxx --from-auth
 <details>
 <summary>Get your <code>Xingzhe</code> data</summary>
 
+If you only want `fit` files add args --fit
+
 ```python
 python3(python) scripts/xingzhe_sync.py ${your mobile or email} ${your password}
 ```
