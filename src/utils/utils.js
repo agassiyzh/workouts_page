@@ -74,11 +74,11 @@ const pattern = /([\u4e00-\u9fa5]{2,}(市|自治州))/g;
 const extractLocations = (str) => {
   const locations = [];
   let match;
-  
+
   while ((match = pattern.exec(str)) !== null) {
     locations.push(match[0]);
   }
-  
+
   return locations;
 };
 
@@ -95,8 +95,8 @@ const locationForRun = (run) => {
 
     if (cityMatch) {
       [city] = cityMatch;
-	  city = cities.find(value => cityMatch.includes(value));
-	  
+	    city = cities.find(value => cityMatch.includes(value));
+
       if (!city) {
         city = '';
       }
