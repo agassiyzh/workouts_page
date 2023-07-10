@@ -14,7 +14,7 @@ import polyline
 import s2sphere as s2
 from rich import print
 from tcxreader.tcxreader import TCXReader
-
+from fit_tool.fit_file import FitFile
 from polyline_processor import filter_out
 
 from .exceptions import TrackLoadError
@@ -76,6 +76,25 @@ class Track:
         except Exception as e:
             print(
                 f"Something went wrong when loading TCX. for file {self.file_names[0]}, we just ignore this file and continue"
+            )
+            print(str(e))
+
+
+    def load_fit(self, file_name):
+        print(file_name)
+
+        try:
+            self.file_names = [os.path.basename(file_name)]
+            # Handle empty fit files
+            # (for example, treadmill runs pulled via garmin-connect-export)
+            if os.path.getsize(file_name) == 0:
+                raise TrackLoadError("Empty FIT file")
+
+            fit = FitFile.from_file(file_name)
+            self._load_fit_data(fit)
+        except Exception as e:
+            print(
+                f"Something went wrong when loading FIT. for file {self.file_names[0]}, we just ignore this file and continue"
             )
             print(str(e))
 
@@ -217,6 +236,11 @@ class Track:
             sum(heart_rate_list) / len(heart_rate_list) if heart_rate_list else None
         )
         self.moving_dict = self._get_moving_data(gpx)
+
+    def _load_fit_data(self, fit):
+        for record in fit.records:
+            message = record.message
+            print(message)
 
     def append(self, other):
         """Append other track to self."""
