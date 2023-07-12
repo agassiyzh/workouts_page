@@ -14,11 +14,18 @@ import polyline
 import s2sphere as s2
 from rich import print
 from tcxreader.tcxreader import TCXReader
-from fit_tool.fit_file import FitFile
 from polyline_processor import filter_out
 
 from .exceptions import TrackLoadError
 from .utils import parse_datetime_to_local
+
+from fit_tool.fit_file import FitFile
+from fit_tool.profile.messages.software_message import SoftwareMessage
+from fit_tool.profile.messages.record_message import RecordMessage
+from fit_tool.profile.messages.session_message import SessionMessage
+from fit_tool.profile.messages.activity_message import ActivityMessage
+from fit_tool.profile.messages.device_info_message import DeviceInfoMessage
+from fit_tool.profile.profile_type import Sport
 
 start_point = namedtuple("start_point", "lat lon")
 run_map = namedtuple("polyline", "summary_polyline")
@@ -81,7 +88,6 @@ class Track:
 
 
     def load_fit(self, file_name):
-        print(file_name)
 
         try:
             self.file_names = [os.path.basename(file_name)]
@@ -89,6 +95,7 @@ class Track:
             # (for example, treadmill runs pulled via garmin-connect-export)
             if os.path.getsize(file_name) == 0:
                 raise TrackLoadError("Empty FIT file")
+
 
             fit = FitFile.from_file(file_name)
             self._load_fit_data(fit)
@@ -237,10 +244,49 @@ class Track:
         )
         self.moving_dict = self._get_moving_data(gpx)
 
-    def _load_fit_data(self, fit):
+    def _load_fit_data(self, fit: FitFile):
+
+        _polylines = []
+
         for record in fit.records:
-            message = record.message
-            print(message)
+
+          message = record.message
+
+          if isinstance(message, RecordMessage):
+            print("Fit Record Message")
+            _polylines.append(s2.LatLng.from_degrees(message.position_lat, message.position_long))
+            self.polyline_container.append([message.position_lat, message.position_long])
+            continue
+          if isinstance(message, SoftwareMessage):
+            print('Fit software message')
+            if message.part_number != "USER_OPERATION":
+              self.source = message.part_number
+            continue
+          if isinstance(message, DeviceInfoMessage):
+            print("Fit device info message")
+            continue
+          if isinstance(message, SessionMessage):
+            print("Fit session message")
+            self.start_time = datetime.fromtimestamp(message.start_time / 1000)
+            self.run_id = message.start_time
+            self.end_time = datetime.fromtimestamp((message.start_time + message.total_timer_time * 1000) / 1000)
+            self.length =  message.total_distance
+            self.average_heartrate = message.avg_heart_rate if message.avg_heart_rate != 0 else None
+            self.type = Sport(message.sport).name.lower()
+            self.moving_dict["distance"] = message.total_distance
+            self.moving_dict["moving_time"] = message.total_moving_time
+            self.moving_dict["elapsed_time"] = message.total_elapsed_time
+            self.moving_dict["average_speed"] = message.avg_speed
+            continue
+          if isinstance(message, ActivityMessage):
+            print("Fit Activity Message")
+            continue
+
+        self.polylines.append(_polylines)
+        self.polyline_str = polyline.encode(self.polyline_container)
+
+
+
 
     def append(self, other):
         """Append other track to self."""
