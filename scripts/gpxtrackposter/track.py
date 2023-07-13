@@ -247,43 +247,54 @@ class Track:
     def _load_fit_data(self, fit: FitFile):
 
         _polylines = []
+        self.polyline_container = []
+        try:
+          for record in fit.records:
 
-        for record in fit.records:
+            message = record.message
 
-          message = record.message
+            if(isinstance(message, RecordMessage)):
+              print("Fit Record Message")
+              if (message.position_lat and message.position_long):
+                _polylines.append(s2.LatLng.from_degrees(message.position_lat, message.position_long))
+                self.polyline_container.append([message.position_lat, message.position_long])
+              continue
+            if(isinstance(message, SoftwareMessage)):
+              print('Fit software message')
+              if message.part_number != "USER_OPERATION":
+                self.source = message.part_number
+              continue
+            if(isinstance(message, DeviceInfoMessage)):
+              print("Fit device info message")
+              continue
+            if(isinstance(message, SessionMessage)):
+              print("Fit session message")
+              self.start_time = datetime.datetime.utcfromtimestamp(message.start_time / 1000)
+              self.run_id = message.start_time
+              self.end_time = datetime.datetime.utcfromtimestamp((message.start_time + message.total_timer_time * 1000) / 1000)
+              self.length =  message.total_distance
+              self.average_heartrate = message.avg_heart_rate if message.avg_heart_rate != 0 else None
+              self.type = Sport(message.sport).name.lower()
 
-          if isinstance(message, RecordMessage):
-            print("Fit Record Message")
-            _polylines.append(s2.LatLng.from_degrees(message.position_lat, message.position_long))
-            self.polyline_container.append([message.position_lat, message.position_long])
-            continue
-          if isinstance(message, SoftwareMessage):
-            print('Fit software message')
-            if message.part_number != "USER_OPERATION":
-              self.source = message.part_number
-            continue
-          if isinstance(message, DeviceInfoMessage):
-            print("Fit device info message")
-            continue
-          if isinstance(message, SessionMessage):
-            print("Fit session message")
-            self.start_time = datetime.fromtimestamp(message.start_time / 1000)
-            self.run_id = message.start_time
-            self.end_time = datetime.fromtimestamp((message.start_time + message.total_timer_time * 1000) / 1000)
-            self.length =  message.total_distance
-            self.average_heartrate = message.avg_heart_rate if message.avg_heart_rate != 0 else None
-            self.type = Sport(message.sport).name.lower()
-            self.moving_dict["distance"] = message.total_distance
-            self.moving_dict["moving_time"] = message.total_moving_time
-            self.moving_dict["elapsed_time"] = message.total_elapsed_time
-            self.moving_dict["average_speed"] = message.avg_speed
-            continue
-          if isinstance(message, ActivityMessage):
-            print("Fit Activity Message")
-            continue
+              # moving_dict
+              self.moving_dict["distance"] = message.total_distance
+              self.moving_dict["moving_time"] = datetime.timedelta(seconds=message.total_moving_time)
+              self.moving_dict["elapsed_time"] = datetime.timedelta(seconds=message.total_elapsed_time)
+              self.moving_dict["average_speed"] = message.avg_speed
 
-        self.polylines.append(_polylines)
-        self.polyline_str = polyline.encode(self.polyline_container)
+              self.name = f"{self.type} from {self.source}"
+              continue
+            if(isinstance(message, ActivityMessage)):
+              print("Fit Activity Message")
+              continue
+
+          self.start_time_local, self.end_time_local = parse_datetime_to_local(self.start_time, self.end_time, self.polyline_container[0])
+          self.start_latlng = start_point(*self.polyline_container[0])
+          self.polylines.append(_polylines)
+          self.polyline_str = polyline.encode(self.polyline_container)
+        except Exception as e:
+            print(e)
+            pass
 
 
 
