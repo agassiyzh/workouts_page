@@ -5,7 +5,7 @@ on:
     branches:
       - master
     paths:
-      - scripts/FIT_sync.py
+      - scripts/fit_sync.py
       - FIT_OUT/**
 
 env:
