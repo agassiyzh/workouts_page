@@ -37,6 +37,10 @@ const RunTable = ({
   };
   const sortDateFuncClick =
     sortFuncInfo === 'Date' ? sortDateFunc : sortDateFuncReverse;
+
+  const sortSourceFunc = (a, b) =>
+    sortFuncInfo === 'Source' ? a.source > b.source ? 1:-1 : b.source < a.source ? -1:1;
+
   const sortFuncMap = new Map([
     ['Type', sortTypeFunc],
     ['KM', sortKMFunc],
@@ -44,6 +48,7 @@ const RunTable = ({
     ['BPM', sortBPMFunc],
     ['Time', sortRunTimeFunc],
     ['Date', sortDateFuncClick],
+    ['Source', sortSourceFunc],
   ]);
 
   const handleClick = (e) => {
