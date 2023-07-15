@@ -11,12 +11,12 @@ on:
 
 env:
   # please change to your own config.
-  ATHLETE: yihong0618
-  TITLE: Yihong0618 Running
+  ATHLETE: agassi_yzh
+  TITLE: 小於的骑行数据
   MIN_GRID_DISTANCE: 10 # change min distance here
-  TITLE_GRID: Over 10km Runs # also here
-  GITHUB_NAME: yihong0618 # change to yours
-  GITHUB_EMAIL: zouzou0208@gmail.com # change to yours
+  TITLE_GRID: Over 10km Workouts # also here
+  GITHUB_NAME: agassiyzh  # change to yours
+  GITHUB_EMAIL: agassi21@gmail.com # change to yours
 
   # IGNORE_BEFORE_SAVING: True # if you want to ignore some data before saving, set this to True
   IGNORE_START_END_RANGE: 10 # Unit meter
