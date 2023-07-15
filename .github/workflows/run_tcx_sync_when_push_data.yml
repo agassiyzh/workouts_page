@@ -1,4 +1,4 @@
-name: Run Data Sync
+name: Run TCX File Data Sync
 
 on:
   push:
@@ -10,7 +10,6 @@ on:
 
 env:
   # please change to your own config.
-  ENABLE: True
   ATHLETE: yihong0618
   TITLE: Yihong0618 Running
   MIN_GRID_DISTANCE: 10 # change min distance here

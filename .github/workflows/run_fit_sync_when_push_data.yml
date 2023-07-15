@@ -1,4 +1,4 @@
-name: Run Data Sync
+name: Run Fit File Data Sync
 
 on:
   push:
