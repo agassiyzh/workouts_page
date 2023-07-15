@@ -1,6 +1,7 @@
 name: Run Fit File Data Sync
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - master

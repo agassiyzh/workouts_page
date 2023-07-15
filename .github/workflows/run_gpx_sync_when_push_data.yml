@@ -1,6 +1,7 @@
 name: Run GPX File Data Sync
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - master

@@ -1,6 +1,7 @@
 name: Run TCX File Data Sync
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - master
