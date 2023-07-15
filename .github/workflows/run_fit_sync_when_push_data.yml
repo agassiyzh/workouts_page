@@ -10,7 +10,7 @@ on:
 
 env:
   # please change to your own config.
-  ENABLE: False
+  ENABLE: True
   ATHLETE: yihong0618
   TITLE: Yihong0618 Running
   MIN_GRID_DISTANCE: 10 # change min distance here
