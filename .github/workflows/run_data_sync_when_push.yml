@@ -17,7 +17,7 @@ on:
       - requirements.txt
 
 env:
-  RUN_TYPE: pass
+  RUN_TYPE: garmin_cn
 
 jobs:
   sync_fit_file:

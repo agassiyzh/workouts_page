@@ -5,7 +5,7 @@ on:
     - cron: '0 0 * * *'
 
 env:
-  RUN_TYPE: pass #strava/nike/garmin/garmin_cn/keep/only_gpx/only_tcx/only_fit/nike_to_strava/strava_to_garmin/strava_to_garmin_cn/garmin_to_strava/garmin_to_strava_cn/codoon
+  RUN_TYPE: garmin_cn #strava/nike/garmin/garmin_cn/keep/only_gpx/only_tcx/only_fit/nike_to_strava/strava_to_garmin/strava_to_garmin_cn/garmin_to_strava/garmin_to_strava_cn/codoon
 
 jobs:
   sync_fit_file:

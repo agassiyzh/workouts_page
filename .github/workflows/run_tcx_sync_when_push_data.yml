@@ -11,7 +11,7 @@ on:
 
 jobs:
   sync_fit_file:
-    if: false
+    if: true
     uses: .github/workflows/run_data_sync.yml
     with:
       run_type: only_tcx
