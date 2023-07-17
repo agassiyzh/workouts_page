@@ -75,7 +75,7 @@ const Index = () => {
   };
 
   const locateActivity = (runDate) => {
-    const activitiesOnDate = runs.filter((r) => r.start_date_local.slice(0, 10) === runDate);
+    const activitiesOnDate = runs.filter((r) => r.start_date_local === runDate);
 
     if (!activitiesOnDate.length) {
       return;
