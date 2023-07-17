@@ -8,7 +8,7 @@ on:
         type: string
   workflow_dispatch:
     inputs:
-      logLevel:
+      run_type:
         description: 'run type'
         required: true
         default: 'pass'
