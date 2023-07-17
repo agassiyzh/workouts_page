@@ -1,5 +1,5 @@
 import React from 'react';
-import { formatPace, colorFromType, formatRunTime } from 'src/utils/utils';
+import { formatPace, colorFromType, formatRunTime, titleForRun } from 'src/utils/utils';
 import styles from './style.module.scss';
 import { element } from 'prop-types';
 
@@ -24,7 +24,7 @@ const RunRow = ({ elementIndex, locateActivity, run, runIndex, setRunIndex }) =>
       onClick={handleClick}
       style={{color: colorFromType(type)}}
     >
-      <td>{run.name}</td>
+      <td>{titleForRun(run)}</td>
       <td>{type}</td>
       <td>{distance}</td>
       {paceParts && <td>{paceParts}</td>}

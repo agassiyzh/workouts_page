@@ -63,6 +63,13 @@ const SNOWBOARD_TITLE = IS_CHINESE ? '单板滑雪' : 'Snowboard';
 const ROAD_TRIP_TITLE = IS_CHINESE ? '自驾' : 'RoadTrip';
 const FLIGHT_TITLE = IS_CHINESE ? '飞行' : 'Flight';
 
+
+const MORNING_TITLE = IS_CHINESE ? '清晨' : 'Morning ';
+const MIDDAY_TITLE = IS_CHINESE ? '午间' : 'Midday ';
+const AFTERNOON_TITLE = IS_CHINESE ? '午后' : 'Afternoon ';
+const EVENING_TITLE = IS_CHINESE ? '傍晚' : 'Evening ';
+const NIGHT_TITLE = IS_CHINESE ? '夜晚' : 'Night ';
+
 const RUN_TITLES = {
   FULL_MARATHON_RUN_TITLE,
   HALF_MARATHON_RUN_TITLE,
@@ -78,6 +85,11 @@ const RUN_TITLES = {
   ROAD_TRIP_TITLE,
   FLIGHT_TITLE,
   SNOWBOARD_TITLE,
+  MORNING_TITLE,
+  MIDDAY_TITLE,
+  AFTERNOON_TITLE,
+  EVENING_TITLE,
+  NIGHT_TITLE,
 };
 
 export {
