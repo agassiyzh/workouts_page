@@ -9,6 +9,6 @@ env:
 
 jobs:
   sync_fit_file:
-    uses: .github/workflows/run_data_sync.yml
+    uses: ./.github/workflows/run_data_sync.yml
     with:
       run_type: env.RUN_TYPE
