@@ -69,6 +69,10 @@ jobs:
           path: ${{ steps.set_variables.outputs.PIP_CACHE }}
           key: Ubuntu-pip-${{ steps.set_variables.outputs.PY }}
 
+      - name: init cache dir
+        run: |
+          mkdir -p ~/running_page_data/{activities,GPX_OUT,TCX_OUT,FIT_OUT,Workouts}
+
       - name: Cache Data Files
         uses: actions/cache@v3
         with:
