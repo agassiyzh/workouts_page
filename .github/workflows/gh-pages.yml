@@ -58,7 +58,7 @@ jobs:
       - run: |
           cp -r ~/running_page_data/assets/ public/static
       - run: |
-          cp -r ~/running_page_data/activities.json public/static
+          cp -r ~/running_page_data/activities.json src/static
 
       - name: GitHub Pages
         uses: crazy-max/ghaction-github-pages@v2.2.0
