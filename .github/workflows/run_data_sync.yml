@@ -68,6 +68,19 @@ jobs:
         with:
           path: ${{ steps.set_variables.outputs.PIP_CACHE }}
           key: Ubuntu-pip-${{ steps.set_variables.outputs.PY }}
+
+      - name: Cache Data Files
+        uses: actions/cache@v2
+        with:
+          path: |
+            FIT_OUT
+            GPX_OUT
+            TCX_OUT
+            activities
+            assets
+            scripts/data.db
+          key: data-files
+
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
@@ -162,11 +175,3 @@ jobs:
           python scripts/gen_svg.py --from-db --title "${{ env.TITLE_GRID }}" --type grid --athlete "${{ env.ATHLETE }}" --output assets/grid.svg --special-color yellow --special-color2 red --special-distance 20 --special-distance2 40 --use-localtime --min-distance "${{ env.MIN_GRID_DISTANCE }}"
           python scripts/gen_svg.py --from-db --type circular --use-localtime
           python scripts/gen_svg.py --from-db --year $(date +"%Y")  --language zh_CN --title "$(date +"%Y") Workouts" --type github --athlete "${{ env.ATHLETE }}" --special-distance 10 --special-distance2 20 --special-color yellow --special-color2 red --output assets/github_$(date +"%Y").svg --use-localtime --min-distance 0.5
-
-      - name: Push new runs
-        run: |
-          git config --local user.email "${{ env.GITHUB_EMAIL }}"
-          git config --local user.name "${{ env.GITHUB_NAME }}"
-          git add .
-          git commit -m '[skip ci] Add new workouts' || echo "nothing to commit"
-          git push || echo "nothing to push"
