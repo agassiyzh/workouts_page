@@ -57,6 +57,8 @@ jobs:
           PATH_PREFIX=/${{ github.event.repository.name }} yarn build --prefix-paths
       - run: |
           cp -r ~/running_page_data/assets/ public/static
+      - run: |
+          cp -r ~/running_page_data/activities.json public/static
 
       - name: GitHub Pages
         uses: crazy-max/ghaction-github-pages@v2.2.0
