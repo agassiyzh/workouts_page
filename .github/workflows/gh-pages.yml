@@ -33,6 +33,7 @@ jobs:
           path: |
             ~/running_page_data
           key: data-files
+          lookup-only: true
 
       - name: Setup Node.js environment
         uses: actions/setup-node@v2.1.4
