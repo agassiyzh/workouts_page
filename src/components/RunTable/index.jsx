@@ -16,6 +16,8 @@ const RunTable = ({
 }) => {
   const [sortFuncInfo, setSortFuncInfo] = useState('');
   // TODO refactor?
+  const sortTypeFunc = (a, b) =>
+    sortFuncInfo === 'Type' ? a.type > b.type ? 1:-1 : b.type < a.type ? -1:1;
   const sortKMFunc = (a, b) =>
     sortFuncInfo === 'KM' ? a.distance - b.distance : b.distance - a.distance;
   const sortPaceFunc = (a, b) =>
@@ -35,12 +37,18 @@ const RunTable = ({
   };
   const sortDateFuncClick =
     sortFuncInfo === 'Date' ? sortDateFunc : sortDateFuncReverse;
+
+  const sortSourceFunc = (a, b) =>
+    sortFuncInfo === 'Source' ? a.source > b.source ? 1:-1 : b.source < a.source ? -1:1;
+
   const sortFuncMap = new Map([
+    ['Type', sortTypeFunc],
     ['KM', sortKMFunc],
     ['Pace', sortPaceFunc],
     ['BPM', sortBPMFunc],
     ['Time', sortRunTimeFunc],
     ['Date', sortDateFuncClick],
+    ['Source', sortSourceFunc],
   ]);
 
   const handleClick = (e) => {

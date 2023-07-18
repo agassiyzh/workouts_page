@@ -28,6 +28,8 @@ from fit_tool.profile.messages.device_info_message import DeviceInfoMessage
 from fit_tool.profile.messages.file_id_message import FileIdMessage
 from fit_tool.profile.profile_type import Sport
 
+from garmin_fit_sdk.profile import Profile as GarminProfile
+
 start_point = namedtuple("start_point", "lat lon")
 run_map = namedtuple("polyline", "summary_polyline")
 
@@ -49,7 +51,9 @@ class Track:
         self.moving_dict = {}
         self.run_id = 0
         self.start_latlng = []
-        self.type = "Run"
+        self.type = ""
+        self.source = ""
+        self.name = ""
 
     def load_gpx(self, file_name):
         """
@@ -61,7 +65,7 @@ class Track:
             # (for example, treadmill runs pulled via garmin-connect-export)
             if os.path.getsize(file_name) == 0:
                 raise TrackLoadError("Empty GPX file")
-            with open(file_name, "r") as file:
+            with open(file_name, "rb") as file:
                 self._load_gpx_data(mod_gpxpy.parse(file))
         except Exception as e:
             print(
@@ -180,6 +184,25 @@ class Track:
         gpx.simplify()
         polyline_container = []
         heart_rate_list = []
+        # determinate type
+        if gpx.tracks[0].type:
+            self.type = gpx.tracks[0].type
+        # determinate source
+        if gpx.creator:
+            self.source = gpx.creator
+        elif gpx.tracks[0].source:
+            self.source = gpx.tracks[0].source
+        if self.source == "xingzhe":
+            self.start_time_local = self.start_time
+            self.run_id = gpx.tracks[0].number
+        # determinate name
+        if gpx.name:
+            self.name = gpx.name
+        elif gpx.tracks[0].name:
+            self.name = gpx.tracks[0].name
+        else:
+            self.name = self.type + " from " + self.source
+
         for t in gpx.tracks:
             for s in t.segments:
                 try:
@@ -225,55 +248,86 @@ class Track:
         _polylines = []
         self.polyline_container = []
 
-        for record in fit.records:
-            message = record.message
+        manufacturer = None
+        product = None
+        part_number = None
+        try:
+            for record in fit.records:
+                message = record.message
 
-            if isinstance(message, RecordMessage):
-                if message.position_lat and message.position_long:
-                    _polylines.append(
-                        s2.LatLng.from_degrees(
-                            message.position_lat, message.position_long
+                if isinstance(message, FileIdMessage):
+                    manufacturer = message.manufacturer
+                    product = (
+                        message.product if message.product else message.favero_product
+                    )
+                elif isinstance(message, RecordMessage):
+                    if message.position_lat and message.position_long:
+                        _polylines.append(
+                            s2.LatLng.from_degrees(
+                                message.position_lat, message.position_long
+                            )
                         )
+                        self.polyline_container.append(
+                            [message.position_lat, message.position_long]
+                        )
+                elif isinstance(message, SoftwareMessage):
+                    if (
+                        manufacturer == 107 and message.part_number != "USER_OPERATION"
+                    ):  # 107迈金， 产品名写在part_number中
+                        part_number = message.part_number
+                elif isinstance(message, SessionMessage):
+                    self.start_time = datetime.datetime.utcfromtimestamp(
+                        message.start_time / 1000
                     )
-                    self.polyline_container.append(
-                        [message.position_lat, message.position_long]
+                    self.run_id = message.start_time
+                    self.end_time = datetime.datetime.utcfromtimestamp(
+                        (message.start_time + message.total_elapsed_time * 1000) / 1000
                     )
-            elif isinstance(message, SessionMessage):
-                self.start_time = datetime.datetime.utcfromtimestamp(
-                    message.start_time / 1000
-                )
-                self.run_id = message.start_time
-                self.end_time = datetime.datetime.utcfromtimestamp(
-                    (message.start_time + message.total_elapsed_time * 1000) / 1000
-                )
-                self.length = message.total_distance
-                self.average_heartrate = (
-                    message.avg_heart_rate if message.avg_heart_rate != 0 else None
-                )
-                self.type = Sport(message.sport).name.lower()
+                    self.length = message.total_distance
+                    self.average_heartrate = (
+                        message.avg_heart_rate if message.avg_heart_rate != 0 else None
+                    )
+                    self.type = Sport(message.sport).name.lower()
 
-                # moving_dict
-                self.moving_dict["distance"] = message.total_distance
-                self.moving_dict["moving_time"] = datetime.timedelta(
-                    seconds=message.total_moving_time
-                    if message.total_moving_time
-                    else message.total_timer_time
-                )
-                self.moving_dict["elapsed_time"] = datetime.timedelta(
-                    seconds=message.total_elapsed_time
-                )
-                self.moving_dict["average_speed"] = (
-                    message.enhanced_avg_speed
-                    if message.enhanced_avg_speed
-                    else message.avg_speed
-                )
+                    # moving_dict
+                    self.moving_dict["distance"] = message.total_distance
+                    self.moving_dict["moving_time"] = datetime.timedelta(
+                        seconds=message.total_moving_time
+                        if message.total_moving_time
+                        else message.total_timer_time
+                    )
+                    self.moving_dict["elapsed_time"] = datetime.timedelta(
+                        seconds=message.total_elapsed_time
+                    )
+                    self.moving_dict["average_speed"] = (
+                        message.enhanced_avg_speed
+                        if message.enhanced_avg_speed
+                        else message.avg_speed
+                    )
 
-        self.start_time_local, self.end_time_local = parse_datetime_to_local(
-            self.start_time, self.end_time, self.polyline_container[0]
-        )
-        self.start_latlng = start_point(*self.polyline_container[0])
-        self.polylines.append(_polylines)
-        self.polyline_str = polyline.encode(self.polyline_container)
+            self.start_time_local, self.end_time_local = parse_datetime_to_local(
+                self.start_time, self.end_time, self.polyline_container[0]
+            )
+            self.start_latlng = start_point(*self.polyline_container[0])
+            self.polylines.append(_polylines)
+            self.polyline_str = polyline.encode(self.polyline_container)
+            self.source = self._get_source(manufacturer, product, part_number)
+            self.name = f"{self.type} from {self.source}"
+        except Exception as e:
+            print(e)
+            pass
+
+    def _get_source(self, manufacturer, product, part_number):
+        manufacturer_name = GarminProfile["types"]["manufacturer"][
+            manufacturer.__str__()
+        ]
+        if manufacturer == 1:  # Garmin
+            product_name = GarminProfile["types"]["garmin_product"][product.__str__()]
+            return f"{manufacturer_name} {product_name}"
+        if manufacturer == 107:  # magene（迈金）
+            return part_number
+
+        return None
 
     def append(self, other):
         """Append other track to self."""
@@ -315,8 +369,8 @@ class Track:
     def to_namedtuple(self):
         d = {
             "id": self.run_id,
-            "name": "run from gpx",  # maybe change later
-            "type": "Run",  # Run for now only support run for now maybe change later
+            "name": self.name,
+            "type": self.type,
             "start_date": self.start_time.strftime("%Y-%m-%d %H:%M:%S"),
             "end": self.end_time.strftime("%Y-%m-%d %H:%M:%S"),
             "start_date_local": self.start_time_local.strftime("%Y-%m-%d %H:%M:%S"),
@@ -327,6 +381,7 @@ class Track:
             else None,
             "map": run_map(self.polyline_str),
             "start_latlng": self.start_latlng,
+            "source": self.source,
         }
         d.update(self.moving_dict)
         # return a nametuple that can use . to get attr

@@ -234,6 +234,8 @@ python3(python) scripts/gpx_sync.py
 
 Copy all your tcx files to TCX_OUT or new tcx files
 
+If you only want `fit` files add args --fit
+
 ```python
 python3(python) scripts/tcx_sync.py
 ```

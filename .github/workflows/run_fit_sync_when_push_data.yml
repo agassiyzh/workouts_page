@@ -1,0 +1,17 @@
+name: Run Fit File Data Sync
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - master
+    paths:
+      - scripts/fit_sync.py
+      - FIT_OUT/**
+
+jobs:
+  sync_fit_file:
+    if: true
+    uses: ./.github/workflows/run_data_sync.yml
+    with:
+      run_type: only_fit

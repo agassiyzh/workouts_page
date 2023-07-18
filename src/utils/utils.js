@@ -3,25 +3,37 @@ import gcoord from 'gcoord';
 import { WebMercatorViewport } from 'react-map-gl';
 import { chinaGeojson } from 'src/static/run_countries';
 import { chinaCities } from 'src/static/city';
-import { MUNICIPALITY_CITIES_ARR, NEED_FIX_MAP, RUN_TITLES } from './const';
+import {
+  MUNICIPALITY_CITIES_ARR,
+  NEED_FIX_MAP,
+  RUN_TITLES,
+  MAIN_COLOR,
+  RIDE_COLOR,
+  VIRTUAL_RIDE_COLOR,
+  HIKE_COLOR,
+  SWIM_COLOR,
+  ROWING_COLOR,
+  ROAD_TRIP_COLOR,
+  FLIGHT_COLOR,
+  RUN_COLOR,
+  KAYAKING_COLOR,
+  SNOWBOARD_COLOR,
+} from './const';
 
 const titleForShow = (run) => {
   const date = run.start_date_local.slice(0, 11);
   const distance = (run.distance / 1000.0).toFixed(2);
   let name = 'Run';
-  if (run.name.slice(0, 7) === 'Running') {
-    name = 'run';
-  }
   if (run.name) {
     name = run.name;
   }
   return `${name} ${date} ${distance} KM ${
-    !run.summary_polyline ? '(No map data for this run)' : ''
+    !run.summary_polyline ? '(No map data for this workout)' : ''
   }`;
 };
 
 const formatPace = (d) => {
-  if (Number.isNaN(d)) return '0';
+  if (Number.isNaN(d) || d == 0) return '0';
   const pace = (1000.0 / 60.0) * (1.0 / d);
   const minutes = Math.floor(pace);
   const seconds = Math.floor((pace - minutes) * 60.0);
@@ -62,11 +74,11 @@ const pattern = /([\u4e00-\u9fa5]{2,}(市|自治州))/g;
 const extractLocations = (str) => {
   const locations = [];
   let match;
-  
+
   while ((match = pattern.exec(str)) !== null) {
     locations.push(match[0]);
   }
-  
+
   return locations;
 };
 
@@ -84,7 +96,7 @@ const locationForRun = (run) => {
     if (cityMatch) {
       [city] = cityMatch;
 	    city = cities.find(value => cityMatch.includes(value));
-	  
+
       if (!city) {
         city = '';
       }
@@ -146,35 +158,117 @@ const geoJsonForRuns = (runs) => ({
       geometry: {
         type: 'LineString',
         coordinates: points,
+        workoutType: run.type,
       },
+      properties: {
+        'color': colorFromType(run.type),
+      },
+      name: run.name,
     };
   }),
 });
 
 const geoJsonForMap = () => chinaGeojson;
 
+const titleForType = (type) => {
+  switch (type) {
+    case 'Run':
+      return RUN_TITLES.RUN_TITLE;
+    case 'Ride':
+      return RUN_TITLES.RIDE_TITLE;
+    case 'Indoor Ride':
+      return RUN_TITLES.INDOOR_RIDE_TITLE;
+    case 'VirtualRide':
+      return RUN_TITLES.VIRTUAL_RIDE_TITLE;
+    case 'Hike':
+      return RUN_TITLES.HIKE_TITLE;
+    case 'Rowing':
+      return RUN_TITLES.ROWING_TITLE;
+    case 'Swim':
+      return RUN_TITLES.SWIM_TITLE;
+    case 'RoadTrip':
+      return RUN_TITLES.ROAD_TRIP_TITLE;
+    case 'Flight':
+      return RUN_TITLES.FLIGHT_TITLE;
+    case 'Kayaking':
+      return RUN_TITLES.KAYAKING_TITLE;
+    case 'Snowboard':
+      return RUN_TITLES.SNOWBOARD_TITLE;
+    default:
+      return RUN_TITLES.RUN_TITLE;
+  }
+}
+
 const titleForRun = (run) => {
+  const type = run.type;
+  if (type == 'Run'){
+      const runDistance = run.distance / 1000;
+      if (runDistance >= 40) {
+        return RUN_TITLES.FULL_MARATHON_RUN_TITLE;
+      }
+      else if (runDistance > 20) {
+        return RUN_TITLES.HALF_MARATHON_RUN_TITLE;
+      }
+  }
+
   const runDistance = run.distance / 1000;
   const runHour = +run.start_date_local.slice(11, 13);
+  var timeTitle = ""
   if (runDistance > 20 && runDistance < 40) {
-    return RUN_TITLES.HALF_MARATHON_RUN_TITLE;
+    timeTitle = RUN_TITLES.HALF_MARATHON_RUN_TITLE;
   }
   if (runDistance >= 40) {
-    return RUN_TITLES.FULL_MARATHON_RUN_TITLE;
+    timeTitle = RUN_TITLES.FULL_MARATHON_RUN_TITLE;
   }
   if (runHour >= 0 && runHour <= 10) {
-    return RUN_TITLES.MORNING_RUN_TITLE;
+    timeTitle = RUN_TITLES.MORNING_TITLE;
   }
-  if (runHour > 10 && runHour <= 14) {
-    return RUN_TITLES.MIDDAY_RUN_TITLE;
+  else if (runHour > 10 && runHour <= 14) {
+    timeTitle = RUN_TITLES.MIDDAY_TITLE;
   }
-  if (runHour > 14 && runHour <= 18) {
-    return RUN_TITLES.AFTERNOON_RUN_TITLE;
+  else if (runHour > 14 && runHour <= 17) {
+    timeTitle = RUN_TITLES.AFTERNOON_TITLE;
   }
-  if (runHour > 18 && runHour <= 21) {
-    return RUN_TITLES.EVENING_RUN_TITLE;
+  else if (runHour > 17 && runHour <= 21) {
+    timeTitle = RUN_TITLES.EVENING_TITLE;
+  }else {
+    timeTitle = RUN_TITLES.NIGHT_TITLE;
   }
-  return RUN_TITLES.NIGHT_RUN_TITLE;
+
+  const typeTitle = titleForType(type);
+
+  const { city } = locationForRun(run)
+
+  return `${city}${timeTitle}${typeTitle}`
+
+};
+
+const colorFromType = (workoutType) => {
+  switch (workoutType) {
+    case 'Run':
+      return RUN_COLOR;
+    case 'Ride':
+    case 'Indoor Ride':
+      return RIDE_COLOR;
+    case 'VirtualRide':
+      return VIRTUAL_RIDE_COLOR;
+    case 'Hike':
+      return HIKE_COLOR;
+    case 'Rowing':
+      return ROWING_COLOR;
+    case 'Swim':
+      return SWIM_COLOR;
+    case 'RoadTrip':
+      return ROAD_TRIP_COLOR;
+    case 'Flight':
+      return FLIGHT_COLOR;
+    case 'Kayaking':
+      return KAYAKING_COLOR;
+    case 'Snowboard':
+      return SNOWBOARD_COLOR;
+    default:
+      return MAIN_COLOR;
+  }
 };
 
 const applyToArray = (func, array) => func.apply(Math, array);
@@ -224,6 +318,8 @@ const filterCityRuns = (run, city) => {
 };
 const filterTitleRuns = (run, title) => titleForRun(run) === title;
 
+const filterTypeRuns = (run, type) => run.type === type;
+
 const filterAndSortRuns = (activities, item, filterFunc, sortFunc) => {
   let s = activities;
   if (item !== 'Total') {
@@ -247,6 +343,7 @@ export {
   geoJsonForRuns,
   geoJsonForMap,
   titleForRun,
+  titleForType,
   filterYearRuns,
   filterCityRuns,
   filterTitleRuns,
@@ -254,6 +351,8 @@ export {
   sortDateFunc,
   sortDateFuncReverse,
   getBoundsForGeoData,
+  filterTypeRuns,
+  colorFromType,
   formatRunTime,
   convertMovingTime2Sec,
 };

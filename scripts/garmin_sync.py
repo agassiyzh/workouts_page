@@ -21,7 +21,7 @@ from config import JSON_FILE, SQL_FILE, FOLDER_DICT, config
 from io import BytesIO
 from tenacity import retry, stop_after_attempt, wait_fixed
 
-from utils import make_activities_file
+from utils import make_activities_file_only
 from garmin_device_adaptor import wrap_device_info
 
 # logging.basicConfig(level=logging.DEBUG)
@@ -51,6 +51,10 @@ GARMIN_CN_URL_DICT = {
     "UPLOAD_URL": "https://connect.garmin.cn/modern/proxy/upload-service/upload/.gpx",
     "ACTIVITY_URL": "https://connect.garmin.cn/proxy/activity-service/activity/{activity_id}",
 }
+
+# set to True if you want to sync all time activities
+# default only sync last 20
+GET_ALL = False
 
 
 class Garmin:
@@ -321,13 +325,22 @@ async def download_garmin_data(client, activity_id, file_type="gpx"):
 
 
 async def get_activity_id_list(client, start=0):
-    activities = await client.get_activities(start, 100)
-    if len(activities) > 0:
-        ids = list(map(lambda a: str(a.get("activityId", "")), activities))
-        print(f"Syncing Activity IDs")
-        return ids + await get_activity_id_list(client, start + 100)
+    if GET_ALL:
+        activities = await client.get_activities(start, 100)
+        if len(activities) > 0:
+            ids = list(map(lambda a: str(a.get("activityId", "")), activities))
+            print(f"Syncing Activity IDs")
+            return ids + await get_activity_id_list(client, start + 100)
+        else:
+            return []
     else:
-        return []
+        activities = await client.get_activities(start, 20)
+        if len(activities) > 0:
+            ids = list(map(lambda a: str(a.get("activityId", "")), activities))
+            print(f"Syncing Activity IDs")
+            return ids
+        else:
+            return []
 
 
 async def gather_with_concurrency(n, tasks):
@@ -386,6 +399,12 @@ if __name__ == "__main__":
         help="if is only for running",
     )
     parser.add_argument(
+        "--only-download",
+        dest="only_download",
+        action="store_true",
+        help="if is only for download personal documents",
+    )
+    parser.add_argument(
         "--tcx",
         dest="download_file_type",
         action="store_const",
@@ -409,6 +428,7 @@ if __name__ == "__main__":
     )
     file_type = options.download_file_type
     is_only_running = options.only_run
+    is_only_download = options.only_download
     if email == None or password == None:
         print("Missing argument nor valid configuration file")
         sys.exit(1)
@@ -431,4 +451,5 @@ if __name__ == "__main__":
         )
     )
     loop.run_until_complete(future)
-    make_activities_file(SQL_FILE, folder, JSON_FILE, file_suffix=file_type)
+    if not is_only_download:
+        make_activities_file_only(SQL_FILE, folder, JSON_FILE, file_suffix=file_type)

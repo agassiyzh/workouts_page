@@ -1,0 +1,17 @@
+name: Run GPX File Data Sync
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - master
+    paths:
+      - scripts/gpx_sync.py
+      - GPX_OUT/**
+
+jobs:
+  sync_fit_file:
+    if: true
+    uses: ./.github/workflows/run_data_sync.yml
+    with:
+      run_type: only_gpx
