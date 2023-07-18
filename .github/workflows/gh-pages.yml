@@ -28,15 +28,10 @@ jobs:
       - uses: actions/checkout@v2
 
       - name: Cache Data Files
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: |
-            FIT_OUT
-            GPX_OUT
-            TCX_OUT
-            activities
-            assets
-            scripts/data.db
+            ~/running_page_data
           key: data-files
 
       - name: Setup Node.js environment
@@ -61,7 +56,7 @@ jobs:
       - run: |
           PATH_PREFIX=/${{ github.event.repository.name }} yarn build --prefix-paths
       - run: |
-          cp -r assets/ public/static
+          cp -r ~/running_page_data/assets/ public/static
 
       - name: GitHub Pages
         uses: crazy-max/ghaction-github-pages@v2.2.0

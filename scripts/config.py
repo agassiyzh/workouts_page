@@ -1,23 +1,26 @@
 import os
 from collections import namedtuple
 import yaml
+from pathlib import Path
 
 # getting content root directory
 current = os.path.dirname(os.path.realpath(__file__))
 parent = os.path.dirname(current)
 
-OUTPUT_DIR = os.path.join(parent, "activities")
-GPX_FOLDER = os.path.join(parent, "GPX_OUT")
-TCX_FOLDER = os.path.join(parent, "TCX_OUT")
-FIT_FOLDER = os.path.join(parent, "FIT_OUT")
-ENDOMONDO_FILE_DIR = os.path.join(parent, "Workouts")
+CI_DATA_FOLDER = Path.home().joinpath("running_page_data")
+
+OUTPUT_DIR = os.path.join(parent, "activities") if not os.getenv("CI") else CI_DATA_FOLDER.joinpath( "activities").__str__()
+GPX_FOLDER = os.path.join(parent, "GPX_OUT") if not os.getenv("CI") else CI_DATA_FOLDER.joinpath( "GPX_OUT").__str__()
+TCX_FOLDER = os.path.join(parent, "TCX_OUT") if not os.getenv("CI") else CI_DATA_FOLDER.joinpath( "TCX_OUT").__str__()
+FIT_FOLDER = os.path.join(parent, "FIT_OUT") if not os.getenv("CI") else CI_DATA_FOLDER.joinpath( "FIT_OUT").__str__()
+ENDOMONDO_FILE_DIR = os.path.join(parent, "Workouts") if not os.getenv("CI") else CI_DATA_FOLDER.joinpath( "Workouts").__str__()
 FOLDER_DICT = {
     "gpx": GPX_FOLDER,
     "tcx": TCX_FOLDER,
     "fit": FIT_FOLDER,
 }
-SQL_FILE = os.path.join(parent, "scripts", "data.db")
-JSON_FILE = os.path.join(parent, "src", "static", "activities.json")
+SQL_FILE = os.path.join(parent, "scripts", "data.db") if not os.getenv("CI") else CI_DATA_FOLDER.joinpath( "data.db").__str__()
+JSON_FILE = os.path.join(parent, "src", "static", "activities.json") if not os.getenv("CI") else CI_DATA_FOLDER.joinpath( "activities.json").__str__()
 SYNCED_FILE_NAME = "imported.json"
 
 # TODO: Move into nike_sync
