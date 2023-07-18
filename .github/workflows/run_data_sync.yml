@@ -78,7 +78,7 @@ jobs:
         with:
           path: |
             ~/running_page_data
-          key: data-files
+          key: workouts_data_files
 
       - name: Install dependencies
         run: |
