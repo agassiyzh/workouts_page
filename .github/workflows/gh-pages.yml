@@ -51,14 +51,16 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-yarn-
 
+      - name: Copy activities.json to src/static
+        run: |
+          cp -r ~/running_page_data/activities.json src/static
       - run: |
           yarn install
       - run: |
           PATH_PREFIX=/${{ github.event.repository.name }} yarn build --prefix-paths
       - run: |
           cp -r ~/running_page_data/assets/ public/static
-      - run: |
-          cp -r ~/running_page_data/activities.json src/static
+
 
       - name: GitHub Pages
         uses: crazy-max/ghaction-github-pages@v2.2.0
