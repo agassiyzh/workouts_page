@@ -42,6 +42,7 @@ env:
   # Dont making this huge, just picking points you needing. https://developers.google.com/maps/documentation/utilities/polylineutility using this tool to making your polyline
   IGNORE_POLYLINE: ""
   IGNORE_RANGE: 0 # Unit meter
+  DATA_ROOT: ~/running_page_data
 
 jobs:
   sync:
@@ -77,7 +78,7 @@ jobs:
         uses: actions/cache@v3
         with:
           path: |
-            ~/running_page_data
+            ${{ env.DATA_ROOT }}
           key: workouts_data
 
       - name: Install dependencies
@@ -130,16 +131,19 @@ jobs:
       - name: Run sync Only GPX script
         if: inputs.run_type == 'only_gpx'
         run: |
+          cp -r GPX_OUT ${{ env.DATA_ROOT }}
           python scripts/gpx_sync.py
 
       - name: Run sync Only TCX script
         if: inputs.run_type == 'only_tcx'
         run: |
+          cp -r TCX_OUT ${{ env.DATA_ROOT }}
           python scripts/tcx_sync.py
 
       - name: Run sync Only FIT script
         if: inputs.run_type == 'only_fit'
         run: |
+          cp -r FIT_OUT ${{ env.DATA_ROOT }}
           python scripts/fit_sync.py
 
       - name: Run sync Strava to Garmin(Run with strava(or others upload to strava) data backup in Garmin)
