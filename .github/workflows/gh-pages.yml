@@ -32,8 +32,9 @@ jobs:
         with:
           path: |
             ~/running_page_data
-          key: workouts_data-${{ github.sha }}
+          key: workouts_data-${{ github.sha }}-${{ github.run_id }}
           restore-keys: |
+            workouts_data-${{ github.sha }}-
             workouts_data-
 
       - name: Setup Node.js environment

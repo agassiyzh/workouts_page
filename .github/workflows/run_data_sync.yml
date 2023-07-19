@@ -79,8 +79,9 @@ jobs:
         with:
           path: |
             ${{ env.DATA_ROOT }}
-          key: workouts_data-${{ github.sha }}
+          key: workouts_data-${{ github.sha }}-${{ github.run_id }}
           restore-keys: |
+            workouts_data-${{ github.sha }}-
             workouts_data-
 
       - name: Install dependencies
