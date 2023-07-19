@@ -79,7 +79,7 @@ jobs:
         with:
           path: |
             ${{ env.DATA_ROOT }}
-          key: workouts_data-${{ env.GITHUB_SHA }}
+          key: workouts_data-${{ github.sha }}
           restore-keys: |
             workouts_data-
 

@@ -32,7 +32,7 @@ jobs:
         with:
           path: |
             ~/running_page_data
-          key: workouts_data-${{ env.GITHUB_SHA }}
+          key: workouts_data-${{ github.sha }}
           restore-keys: |
             workouts_data-
 
