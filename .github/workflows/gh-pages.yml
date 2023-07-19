@@ -56,10 +56,10 @@ jobs:
 
       - name: Copy activities.json to src/static
         run: |
-          cp -r ~/running_page_data/activities.json src/static\
+          cp -r ~/running_page_data/activities.json src/static
 
       - run: |
-          cp -r ~/running_page_data/assets/ ./
+          cp -r ~/running_page_data/assets ./
 
       - run: |
           yarn install
