@@ -20,8 +20,10 @@ env:
   RUN_TYPE: garmin_cn
 
 jobs:
-  sync_fit_file:
-    if: false
-    uses: ./.github/workflows/run_data_sync.yml
-    with:
-      run_type: env.RUN_TYPE
+  sync_file:
+    name: sync file
+    runs-on: ubuntu-latest
+    steps:
+      - uses: ./.github/workflows/run_data_sync.yml
+        with:
+          run_type: env.RUN_TYPE
