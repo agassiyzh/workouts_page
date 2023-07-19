@@ -53,13 +53,15 @@ jobs:
 
       - name: Copy activities.json to src/static
         run: |
-          cp -r ~/running_page_data/activities.json src/static
+          cp -r ~/running_page_data/activities.json src/static\
+
+      - run: |
+          cp -r ~/running_page_data/assets/ ./
+
       - run: |
           yarn install
       - run: |
           PATH_PREFIX=/${{ github.event.repository.name }} yarn build --prefix-paths
-      - run: |
-          cp -r ~/running_page_data/assets/ public/static
 
 
       - name: GitHub Pages
