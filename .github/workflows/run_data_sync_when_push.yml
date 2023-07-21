@@ -24,6 +24,9 @@ jobs:
     name: sync file
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
       - uses: ./.github/workflows/run_data_sync.yml
         with:
           run_type: env.RUN_TYPE
