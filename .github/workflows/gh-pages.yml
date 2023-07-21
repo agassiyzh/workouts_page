@@ -9,6 +9,8 @@ on:
   workflow_run:
     workflows:
       - "Run Data Sync"
+    branches:
+      - "master"
     types:
       - completed
 
