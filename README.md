@@ -74,6 +74,7 @@ English | [简体中文](https://github.com/yihong0618/running_page/blob/master/
 | [RealTiny656](https://github.com/tiny656)         | <https://tiny656.github.io/running_page/>      | JoyRun    |
 | [EINDEX](https://github.com/eindex)               | <https://workouts.eindex.me/>                  | Strava/Nike|
 | [Melt](https://github.com/fpGHwd)                 | <https://running.autove.dev/>                  | Strava    |
+| [deepinwine](https://github.com/deepinwine)       | <https://deepin.autove.dev/>                   | Garmin-cn |
 
 
 </details>
@@ -672,6 +673,28 @@ The following steps need to be taken
 4. Go to repository's `Settings -> Code and automation -> Actions ->General`, Scroll to the bottom, find `Workflow permissions`, choose the first option `Read and write permissions`, click `Save`.
 
 </details>
+
+## Storing Data Files in GitHub Cache
+
+<details>
+<summary>Storing Data Files in GitHub Cache</summary>
+
+When `SAVE_DATA_IN_GITHUB_CACHE` is set to `true` in the `run_data_sync.yml` file, the script can store fetched and intermediate data files in the GitHub Action cache. This helps keep your GitHub commit history and directory clean.
+
+If you are deploying using GitHub Pages, it is recommended to set this value to `true`.
+
+If you are using `Vercel`, you need to perform the following steps in the Vercel dashboard:
+
+1. In the `General` section of `Build & Development Settings`, choose `Other` as the `Framework Preset`, and then enable all the overrides, leaving the command line content empty.
+
+  ![General](https://user-images.githubusercontent.com/413855/255507920-76932fb9-61d6-423e-92e2-2e92b5bbd432.png)
+
+2. In the Git module, enter `gh-pages` as the `Production Branch` Branch name.
+
+  ![Branch name](https://user-images.githubusercontent.com/413855/255508137-ef742815-8418-419a-86b4-6756ff68e1db.png)
+
+</details>
+
 
 # Fit file
 

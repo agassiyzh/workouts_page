@@ -12,8 +12,6 @@ from polyline_processor import filter_out
 
 from .db import Activity, init_db, update_or_create_activity
 
-
-sys.path.append("..")
 from synced_data_file_logger import save_synced_data_file_list
 
 
@@ -91,10 +89,11 @@ class Generator:
             created = update_or_create_activity(self.session, t.to_namedtuple())
             if created:
                 sys.stdout.write("+")
-                synced_files.extend(t.file_names)
             else:
                 sys.stdout.write(".")
             sys.stdout.flush()
+
+        synced_files.extend(t.file_names)
 
         save_synced_data_file_list(data_dir, synced_files)
 
@@ -108,6 +107,20 @@ class Generator:
             sys.stdout.write(".")
         sys.stdout.flush()
 
+        save_synced_data_file_list(synced_files)
+
+        self.session.commit()
+
+    def sync_from_kml_track(self, track):
+        created = update_or_create_activity(self.session, track.to_namedtuple())
+        if created:
+            sys.stdout.write("+")
+        else:
+            sys.stdout.write(".")
+        sys.stdout.flush()
+
+        save_synced_data_file_list(synced_files)
+
         self.session.commit()
 
     def sync_from_app(self, app_tracks):
@@ -120,9 +133,9 @@ class Generator:
             created = update_or_create_activity(self.session, t)
             if created:
                 sys.stdout.write("+")
-                synced_files.extend(t.file_names)
             else:
                 sys.stdout.write(".")
+            synced_files.extend(t.file_names)
             sys.stdout.flush()
 
         self.session.commit()

@@ -5,28 +5,11 @@ on:
     branches:
       - master
     paths:
-      - scripts/nike_sync.py
-      - scripts/nike_to_strava_sync.py
-      - scripts/strava_sync.py
-      - scripts/gen_svg.py
       - scripts/garmin_sync.py
-      - scripts/keep_sync.py
-      - scripts/gpx_sync.py
-      - scripts/tcx_sync.py
-      - scripts/garmin_to_strava_sync.py
-      - requirements.txt
-
-env:
-  RUN_TYPE: garmin_cn
 
 jobs:
   sync_file:
     name: sync file
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-
-      - uses: ./.github/workflows/run_data_sync.yml
-        with:
-          run_type: env.RUN_TYPE
+    uses: ./.github/workflows/run_data_sync.yml
+    with:
+        run_type: "garmin_cn"
