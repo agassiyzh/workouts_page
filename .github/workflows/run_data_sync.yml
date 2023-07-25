@@ -155,13 +155,12 @@ jobs:
         if: inputs.run_type == 'strava_to_garmin_cn'
         run: |
           get_all_arg=""
-          echo ${{ github.event.head_commit.message }}
           if [ ${{ startsWith(github.event.head_commit.message, '[garmin_get_all]') }} ]:
           then
             get_all_arg="--get-all"
             echo "garmin get all track files"
           fi
-            python scripts/strava_to_garmin_sync.py ${{ secrets.STRAVA_CLIENT_ID }} ${{ secrets.STRAVA_CLIENT_SECRET }} ${{ secrets.STRAVA_CLIENT_REFRESH_TOKEN }}  ${{ secrets.GARMIN_CN_EMAIL }} ${{ secrets.GARMIN_CN_PASSWORD }} ${{ secrets.STRAVA_EMAIL }} ${{ secrets.STRAVA_PASSWORD }} --is-cn $get_all_arg
+          python scripts/strava_to_garmin_sync.py ${{ secrets.STRAVA_CLIENT_ID }} ${{ secrets.STRAVA_CLIENT_SECRET }} ${{ secrets.STRAVA_CLIENT_REFRESH_TOKEN }}  ${{ secrets.GARMIN_CN_EMAIL }} ${{ secrets.GARMIN_CN_PASSWORD }} ${{ secrets.STRAVA_EMAIL }} ${{ secrets.STRAVA_PASSWORD }} --is-cn  $get_all_arg
 
       - name: Run sync Garmin-cn to Strava(Run with Garmin data backup in Strava)
         if: inputs.run_type == 'garmin_to_strava_cn'
