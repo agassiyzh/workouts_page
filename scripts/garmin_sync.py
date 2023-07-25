@@ -420,6 +420,12 @@ if __name__ == "__main__":
         default="gpx",
         help="to download personal documents or ebook",
     )
+    parser.add_argument(
+        "--get-all",
+        dest="get_all_file",
+        action="store_true",
+        help="if is download all track files",
+    )
     options = parser.parse_args()
     email = options.email or config("sync", "garmin", "email")
     password = options.password or config("sync", "garmin", "password")
@@ -429,6 +435,7 @@ if __name__ == "__main__":
     file_type = options.download_file_type
     is_only_running = options.only_run
     is_only_download = options.only_download
+    GET_ALL = options.get_all_file
     if email == None or password == None:
         print("Missing argument nor valid configuration file")
         sys.exit(1)

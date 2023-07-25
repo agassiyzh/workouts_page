@@ -95,18 +95,6 @@ class Generator:
 
         synced_files.extend(t.file_names)
 
-        save_synced_data_file_list(data_dir, synced_files)
-
-        self.session.commit()
-
-    def sync_from_kml_track(self, track):
-        created = update_or_create_activity(self.session, track.to_namedtuple())
-        if created:
-            sys.stdout.write("+")
-        else:
-            sys.stdout.write(".")
-        sys.stdout.flush()
-
         save_synced_data_file_list(synced_files)
 
         self.session.commit()
@@ -118,8 +106,6 @@ class Generator:
         else:
             sys.stdout.write(".")
         sys.stdout.flush()
-
-        save_synced_data_file_list(synced_files)
 
         self.session.commit()
 
