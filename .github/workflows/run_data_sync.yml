@@ -8,6 +8,11 @@ on:
         type: string
   workflow_dispatch:
     inputs:
+      get_all_garmin_data:
+        description: 'if get all garmin data'
+        required: false
+        default: false
+        type: boolean
       run_type:
         description: 'run type'
         required: true
@@ -127,7 +132,7 @@ jobs:
         if: inputs.run_type == 'garmin_cn'
         run: |
           get_all_arg=""
-          if [ ${{ startsWith(github.event.head_commit.message, '[garmin_get_all]') }} ]:
+          if [ ${{ startsWith(github.event.head_commit.message, '[garmin_get_all]') || inputs.get_all_garmin_data }} ]:
           then
             get_all_arg="--get-all"
             echo "garmin get all track files"
@@ -139,7 +144,6 @@ jobs:
       - name: Run sync Only GPX script
         if: inputs.run_type == 'only_gpx'
         run: |
-          cp -r GPX_OUT ${{ env.DATA_ROOT }}
           python scripts/gpx_sync.py
 
       - name: Run sync Only FIT script
