@@ -132,8 +132,7 @@ jobs:
         if: inputs.run_type == 'garmin_cn'
         run: |
           get_all_arg=""
-          echo ${{github.event.push.head_commit.message}}
-          if [ ${{ startsWith(github.event.push.head_commit.message, '[garmin_get_all]') || inputs.get_all_garmin_data == true }} ]; then
+          if [ ${{ inputs.get_all_garmin_data }} == 'true' ]; then
             get_all_arg="--get-all"
             echo "garmin get all track files"
           fi
