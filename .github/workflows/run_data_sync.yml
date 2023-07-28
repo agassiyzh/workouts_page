@@ -6,6 +6,11 @@ on:
       run_type:
         required: true
         type: string
+      get_all_garmin_data:
+        description: 'if get all garmin data'
+        required: false
+        default: false
+        type: boolean
   workflow_dispatch:
     inputs:
       get_all_garmin_data:
