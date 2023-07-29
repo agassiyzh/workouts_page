@@ -10,6 +10,7 @@ on:
 jobs:
   sync_file:
     name: sync file
+    secrets: inherit
     uses: ./.github/workflows/run_data_sync.yml
     with:
         run_type: "garmin_cn"

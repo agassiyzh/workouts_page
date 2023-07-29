@@ -12,6 +12,7 @@ on:
 jobs:
   sync_fit_file:
     if: true
+    secrets: inherit
     uses: ./.github/workflows/run_data_sync.yml
     with:
       run_type: only_fit
