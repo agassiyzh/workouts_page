@@ -133,7 +133,7 @@ R.I.P. 希望大家都能健康顺利的跑过终点，逝者安息。
 git clone https://github.com/yihong0618/running_page.git --depth=1
 ```
 
-## 安装及测试 (node >= 12 and <= 14 python >= 3.7)
+## 安装及测试 (node >= 14.15.0 python >= 3.7)
 
 ```
 pip3 install -r requirements.txt
@@ -850,6 +850,8 @@ Actions [源码](https://github.com/yihong0618/running_page/blob/master/.github/
 2. 在Git模块中，`Production Branch`的Branch name填入`gh-pages`
 
   ![Branch name](https://user-images.githubusercontent.com/413855/255508137-ef742815-8418-419a-86b4-6756ff68e1db.png)
+
+3. `run_data_sync.yml`中的`BUILD_GH_PAGES`设置为`true`
 
 </details>
 

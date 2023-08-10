@@ -118,7 +118,7 @@ Clone or fork the repo.
 git clone https://github.com/yihong0618/running_page.git --depth=1
 ```
 
-## Installation and testing (node >= 12 and <= 14 python >= 3.7)
+## Installation and testing (node >= 14.15.0 python >= 3.7)
 
 ```
 pip3 install -r requirements.txt
@@ -681,7 +681,7 @@ The following steps need to be taken
 
 When `SAVE_DATA_IN_GITHUB_CACHE` is set to `true` in the `run_data_sync.yml` file, the script can store fetched and intermediate data files in the GitHub Action cache. This helps keep your GitHub commit history and directory clean.
 
-If you are deploying using GitHub Pages, it is recommended to set this value to `true`.
+If you are deploying using GitHub Pages, it is recommended to set this value to `true`, and set  `BUILD_GH_PAGES` to true.
 
 If you are using `Vercel`, you need to perform the following steps in the Vercel dashboard:
 
@@ -692,6 +692,9 @@ If you are using `Vercel`, you need to perform the following steps in the Vercel
 2. In the Git module, enter `gh-pages` as the `Production Branch` Branch name.
 
   ![Branch name](https://user-images.githubusercontent.com/413855/255508137-ef742815-8418-419a-86b4-6756ff68e1db.png)
+
+
+3. Set the `BUILD_GH_PAGES` to true, in `run_data_sync.yml`.
 
 </details>
 

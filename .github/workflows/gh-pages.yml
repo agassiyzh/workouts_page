@@ -60,20 +60,10 @@ jobs:
             ${{ inputs.data_cache_prefix }}-${{ github.sha }}-
             ${{ inputs.data_cache_prefix }}-
 
-      - name: Cache Data Files
-        uses: actions/cache@v3
-        with:
-          path: |
-            ~/running_page_data
-          key: workouts_data-${{ github.sha }}-${{ github.run_id }}
-          restore-keys: |
-            workouts_data-${{ github.sha }}-
-            workouts_data-
-
       - name: Setup Node.js environment
         uses: actions/setup-node@v3
         with:
-          node-version: "16"
+          node-version: '16'
           cache: 'yarn'
 
       - run: |

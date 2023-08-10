@@ -41,7 +41,7 @@ on:
 
 env:
   # please change to your own config.
-  RUN_TYPE: pass # support strava/nike/garmin/garmin_cn/keep/only_gpx/only_fit/nike_to_strava/strava_to_garmin/strava_to_garmin_cn/garmin_to_strava/garmin_to_strava_cn/codoon, Please change the 'pass' it to your own
+  RUN_TYPE: pass # support strava/nike/garmin/garmin_cn/keep/only_gpx/only_fit/only_fit/nike_to_strava/strava_to_garmin/strava_to_garmin_cn/garmin_to_strava/garmin_to_strava_cn/codoon, Please change the 'pass' it to your own
   ATHLETE: agassi_yzh
   TITLE: 小於的骑行数据
   MIN_GRID_DISTANCE: 10 # change min distance here
@@ -56,6 +56,7 @@ env:
   IGNORE_RANGE: 10 # Unit meter
   SAVE_DATA_IN_GITHUB_CACHE: true # if you deploy in the vercal, check the README
   DATA_CACHE_PREFIX: "track_data"
+  BUILD_GH_PAGES: false
 
 jobs:
   sync:
@@ -64,6 +65,8 @@ jobs:
     outputs:
       SAVE_DATA_IN_GITHUB_CACHE: ${{ steps.set_output.outputs.SAVE_DATA_IN_GITHUB_CACHE }}
       DATA_CACHE_PREFIX: ${{ steps.set_output.outputs.DATA_CACHE_PREFIX }}
+      BUILD_GH_PAGES: ${{ steps.set_output.outputs.BUILD_GH_PAGES }}
+
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -207,9 +210,10 @@ jobs:
         run: |
           echo "SAVE_DATA_IN_GITHUB_CACHE=${{ env.SAVE_DATA_IN_GITHUB_CACHE }}" >> "$GITHUB_OUTPUT"
           echo "DATA_CACHE_PREFIX=${{ env.DATA_CACHE_PREFIX }}" >> "$GITHUB_OUTPUT"
+          echo "BUILD_GH_PAGES=${{ env.BUILD_GH_PAGES }}" >> "$GITHUB_OUTPUT"
 
   publish_github_pages:
-    if: needs.sync.result == 'success'
+    if: needs.sync.result == 'success' && needs.sync.outputs.BUILD_GH_PAGES == 'true'
     name: Build and publish Github Pages
     uses: ./.github/workflows/gh-pages.yml
     with:
