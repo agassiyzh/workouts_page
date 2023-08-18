@@ -52,8 +52,7 @@ env:
   # IGNORE_BEFORE_SAVING: True # if you want to ignore some data before saving, set this to True
   IGNORE_START_END_RANGE: 0 # Unit meter
   # Dont making this huge, just picking points you needing. https://developers.google.com/maps/documentation/utilities/polylineutility using this tool to making your polyline
-  IGNORE_POLYLINE: "ktjrFoemeU~IorGq}DeB"
-  IGNORE_RANGE: 10 # Unit meter
+    IGNORE_RANGE: 10 # Unit meter
   SAVE_DATA_IN_GITHUB_CACHE: true # if you deploy in the vercal, check the README
   DATA_CACHE_PREFIX: "track_data"
   BUILD_GH_PAGES: true
@@ -154,12 +153,12 @@ jobs:
           python scripts/gpx_sync.py
 
       - name: Run sync Only FIT script
-        if: env.RUN_TYPE == 'only_fit'
+        if: inputs.RUN_TYPE == 'only_fit'
         run: |
           python scripts/fit_sync.py
 
       - name: Run sync Only TCX script
-        if: env.RUN_TYPE == 'only_tcx'
+        if: inputs.RUN_TYPE == 'only_tcx'
         run: |
           python scripts/tcx_sync.py
 
