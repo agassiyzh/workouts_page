@@ -9,6 +9,9 @@
 }
 
 .buttons {
+  position: absolute;
+  top: 10px;
+  left: 10px;
   margin: 0 auto;
   padding-right: 70px;
 }
@@ -26,14 +29,7 @@
 }
 
 .selected {
-  color: $nike;
-}
-
-.fullscreenButton {
-  top: 0rem;
-  right: 0rem;
-  opacity: 0.3;
-  padding: 1.2rem;
+  color: $green;
 }
 
 .runTitle {

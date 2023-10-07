@@ -24,10 +24,10 @@ numpy
 tzlocal
 fit-tool
 haversine==2.8.0
-garmin-fit-sdk
+garth
+
 
 bs4
-pycrypto
 html.parser
 aiofiles
 # if you need to import kml file
