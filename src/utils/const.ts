@@ -1,6 +1,6 @@
 // const
 const MAPBOX_TOKEN =
-    'pk.eyJ1IjoiYmVuLTI5IiwiYSI6ImNrZ3Q4Ym9mMDBqMGYyeXFvODV2dWl6YzQifQ.gSKoWF-fMjhzU67TuDezJQ';
+    'pk.eyJ1IjoiYWdhc3NpeXpoIiwiYSI6ImNsbmd4OWI5ZTEzZHMyam9oZjFhZmw4anEifQ.is71JbQishk2ywfG5zvOlQ';
 const MUNICIPALITY_CITIES_ARR = [
   '北京市',
   '上海市',
@@ -65,6 +65,13 @@ const SKI_TITLE = IS_CHINESE ? '双板滑雪' : 'Ski';
 const ROAD_TRIP_TITLE = IS_CHINESE ? '自驾' : 'RoadTrip';
 const FLIGHT_TITLE = IS_CHINESE ? '飞行' : 'Flight';
 
+
+const MORNING_TITLE = IS_CHINESE ? '清晨' : 'Morning ';
+const MIDDAY_TITLE = IS_CHINESE ? '午间' : 'Midday ';
+const AFTERNOON_TITLE = IS_CHINESE ? '午后' : 'Afternoon ';
+const EVENING_TITLE = IS_CHINESE ? '傍晚' : 'Evening ';
+const NIGHT_TITLE = IS_CHINESE ? '夜晚' : 'Night ';
+
 const RUN_TITLES = {
   FULL_MARATHON_RUN_TITLE,
   HALF_MARATHON_RUN_TITLE,
@@ -81,7 +88,11 @@ const RUN_TITLES = {
   ROAD_TRIP_TITLE,
   FLIGHT_TITLE,
   SNOWBOARD_TITLE,
-  SKI_TITLE,
+  MORNING_TITLE,
+  MIDDAY_TITLE,
+  AFTERNOON_TITLE,
+  EVENING_TITLE,
+  NIGHT_TITLE,
 };
 
 export {

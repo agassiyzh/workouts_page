@@ -1,5 +1,5 @@
 import React from 'react';
-import { formatPace, colorFromType, formatRunTime, Activity } from '@/utils/utils';
+import { formatPace, colorFromType, formatRunTime, Activity, titleForRun } from '@/utils/utils';
 import styles from './style.module.scss';
 
 interface IRunRowProperties {
@@ -29,13 +29,14 @@ const RunRow = ({ elementIndex, locateActivity, run, runIndex, setRunIndex }: IR
       onClick={handleClick}
       style={{color: colorFromType(type)}}
     >
-      <td>{run.name}</td>
+      <td>{titleForRun(run)}</td>
       <td>{type}</td>
       <td>{distance}</td>
-      <td>{paceParts}</td>
+      {paceParts && <td>{paceParts}</td>}
       <td>{heartRate && heartRate.toFixed(0)}</td>
       <td>{runTime}</td>
       <td className={styles.runDate}>{run.start_date_local}</td>
+      <td>{run.source}</td>
     </tr>
   );
 };

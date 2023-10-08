@@ -210,7 +210,37 @@ const titleForRun = (run) => {
         return RUN_TITLES.HALF_MARATHON_RUN_TITLE;
       }
   }
-  return titleForType(type);
+
+  const runDistance = run.distance / 1000;
+  const runHour = +run.start_date_local.slice(11, 13);
+  var timeTitle = ""
+  if (runDistance > 20 && runDistance < 40) {
+    timeTitle = RUN_TITLES.HALF_MARATHON_RUN_TITLE;
+  }
+  if (runDistance >= 40) {
+    timeTitle = RUN_TITLES.FULL_MARATHON_RUN_TITLE;
+  }
+  if (runHour >= 0 && runHour <= 10) {
+    timeTitle = RUN_TITLES.MORNING_TITLE;
+  }
+  else if (runHour > 10 && runHour <= 14) {
+    timeTitle = RUN_TITLES.MIDDAY_TITLE;
+  }
+  else if (runHour > 14 && runHour <= 17) {
+    timeTitle = RUN_TITLES.AFTERNOON_TITLE;
+  }
+  else if (runHour > 17 && runHour <= 21) {
+    timeTitle = RUN_TITLES.EVENING_TITLE;
+  }else {
+    timeTitle = RUN_TITLES.NIGHT_TITLE;
+  }
+
+  const typeTitle = titleForType(type);
+
+  const { city } = locationForRun(run)
+
+  return `${city}${timeTitle}${typeTitle}`
+
 };
 
 const colorFromType = (workoutType) => {
