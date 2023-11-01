@@ -7,6 +7,7 @@ import {
 } from '@/utils/utils';
 import RunRow from './RunRow';
 import styles from './style.module.scss';
+import { USE_SPEED } from '@/utils/const';
 
 interface IRunTableProperties {
   runs: Activity[];
@@ -56,7 +57,7 @@ const RunTable = ({
   const sortFuncMap = new Map([
     ['Type', sortTypeFunc],
     ['KM', sortKMFunc],
-    ['Pace', sortPaceFunc],
+    [USE_SPEED? 'Speed' : 'Pace', sortPaceFunc],
     ['BPM', sortBPMFunc],
     ['Time', sortRunTimeFunc],
     ['Date', sortDateFuncClick],

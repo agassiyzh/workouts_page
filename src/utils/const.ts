@@ -140,3 +140,5 @@ export const COUNTRY_FILL_COLOR = wpink;
 export const KAYAKING_COLOR = red;
 export const SNOWBOARD_COLOR = wpink;
 export const TRAIL_RUN_COLOR = IKB;
+// true: speed (km/h); false: pace(minutes/km)
+export const USE_SPEED = true;

@@ -59,6 +59,12 @@ const formatPace = (d: number): string => {
   return `${minutes}'${seconds.toFixed(0).toString().padStart(2, '0')}"`;
 };
 
+const formatSpeed = (d: number): String => {
+  if (Number.isNaN(d) || d == 0) return '0';
+  const speed = (60 * 60) / 1000 * d
+  return `${speed} km/h`
+}
+
 const convertMovingTime2Sec = (moving_time: string): number => {
   if (!moving_time) {
     return 0;
@@ -382,6 +388,7 @@ const sortDateFuncReverse = (a: Activity, b: Activity) => sortDateFunc(b, a);
 export {
   titleForShow,
   formatPace,
+  formatSpeed,
   scrollToMap,
   locationForRun,
   intComma,
