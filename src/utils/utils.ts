@@ -61,7 +61,7 @@ const formatPace = (d: number): string => {
 
 const formatSpeed = (d: number): String => {
   if (Number.isNaN(d) || d == 0) return '0';
-  const speed = (60 * 60) / 1000 * d
+  const speed = ((60 * 60) / 1000 * d).toFixed(2)
   return `${speed} km/h`
 }
 
