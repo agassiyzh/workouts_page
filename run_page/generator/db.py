@@ -37,6 +37,7 @@ ACTIVITY_KEYS = [
     "average_heartrate",
     "average_speed",
     "source",
+    "cadence",
 ]
 
 
@@ -57,6 +58,7 @@ class Activity(Base):
     average_speed = Column(Float)
     streak = None
     source = Column(String)
+    cadence = Column(Integer)
 
     def to_dict(self):
         out = {}
@@ -122,6 +124,7 @@ def update_or_create_activity(session, run_activity):
                     run_activity.map and run_activity.map.summary_polyline or ""
                 ),
                 source=source,
+                cadence=run_activity.cadence,
             )
             session.add(activity)
             created = True
@@ -137,6 +140,7 @@ def update_or_create_activity(session, run_activity):
                 run_activity.map and run_activity.map.summary_polyline or ""
             )
             activity.source = source
+            activity.cadence = run_activity.cadence
     except Exception as e:
         print(f"something wrong with {run_activity.id}")
         print(str(e))

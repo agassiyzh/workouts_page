@@ -55,6 +55,7 @@ class Track:
         self.type = "Run"
         self.source = ""
         self.name = ""
+        self.cadence = None
 
     def load_gpx(self, file_name):
         """
@@ -290,6 +291,10 @@ class Track:
             if message["enhanced_avg_speed"]
             else message["avg_speed"]
         )
+
+        if message.__contains__("avg_cadence"):
+            self.cadence = message["avg_cadence"]
+
         for record in fit["record_mesgs"]:
             if "position_lat" in record and "position_long" in record:
                 lat = record["position_lat"] / SEMICIRCLE
@@ -380,6 +385,7 @@ class Track:
             "map": run_map(self.polyline_str),
             "start_latlng": self.start_latlng,
             "source": self.source,
+            "cadence": self.cadence,
         }
         d.update(self.moving_dict)
         # return a nametuple that can use . to get attr

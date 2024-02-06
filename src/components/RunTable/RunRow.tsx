@@ -38,6 +38,7 @@ const RunRow = ({ elementIndex, locateActivity, run, runIndex, setRunIndex }: IR
       <td>{distance}</td>
       {paceParts && <td>{paceParts}</td>}
       <td>{heartRate && heartRate.toFixed(0)}</td>
+      <td>{run.cadence}</td>
       <td>{runTime}</td>
       <td className={styles.runDate}>{run.start_date_local}</td>
       <td>{run.source}</td>

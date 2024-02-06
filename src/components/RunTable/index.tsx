@@ -55,11 +55,15 @@ const RunTable = ({
   const sortSourceFunc = (a, b) =>
     sortFuncInfo === 'Source' ? a.source > b.source ? 1:-1 : b.source < a.source ? -1:1;
 
+    const sortCadenceFunc = (a, b) =>
+      sortFuncInfo === 'Cadence' ? a.cadence > b.cadence ? 1:-1 : b.cadence < a.cadence ? -1:1;
+
   const sortFuncMap = new Map([
     ['Type', sortTypeFunc],
     ['KM', sortKMFunc],
     [USE_SPEED? 'Speed' : 'Pace', sortPaceFunc],
     ['BPM', sortBPMFunc],
+    ['Cadence', sortCadenceFunc],
     ['Time', sortRunTimeFunc],
     ['Date', sortDateFuncClick],
     ['Source', sortSourceFunc],

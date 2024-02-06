@@ -40,6 +40,7 @@ export interface Activity {
   average_speed: number;
   streak: number;
   source: string;
+  cadence: number
 }
 
 const titleForShow = (run: Activity): string => {
