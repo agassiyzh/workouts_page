@@ -384,5 +384,7 @@ if __name__ == "__main__":
     loop.run_until_complete(future)
     # fit may contain gpx(maybe upload by user)
     if file_type == "fit":
-        make_activities_file_only(SQL_FILE, FOLDER_DICT["gpx"], JSON_FILE, file_suffix="gpx")
+        make_activities_file_only(
+            SQL_FILE, FOLDER_DICT["gpx"], JSON_FILE, file_suffix="gpx"
+        )
     make_activities_file_only(SQL_FILE, folder, JSON_FILE, file_suffix=file_type)

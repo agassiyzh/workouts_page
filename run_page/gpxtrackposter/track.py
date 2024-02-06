@@ -259,7 +259,6 @@ class Track:
 
         self.source = self._get_fit_source(fit)
 
-
         message = fit["session_mesgs"][0]
         self.start_time = datetime.datetime.utcfromtimestamp(
             (message["start_time"] + FIT_EPOCH_S)
@@ -313,19 +312,17 @@ class Track:
                 self.start_time, self.end_time, None
             )
 
-
     def _get_fit_source(self, fit):
         try:
-          manufacturer = fit['file_id_mesgs'][0]['manufacturer']
-          source = ""
+            manufacturer = fit["file_id_mesgs"][0]["manufacturer"]
+            source = ""
 
-          if manufacturer == "garmin":
-            source = "garmin " + fit['file_id_mesgs'][0]['garmin_product']
-          if manufacturer == "magene":
-            source = fit['software_mesgs'][0]['part_number']
+            if manufacturer == "garmin":
+                source = "garmin " + fit["file_id_mesgs"][0]["garmin_product"]
+            if manufacturer == "magene":
+                source = fit["software_mesgs"][0]["part_number"]
 
-          return source
-
+            return source
 
         except:
             return ""
