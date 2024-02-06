@@ -1,0 +1,10 @@
+{
+  "sqltools.connections": [
+    {
+      "previewLimit": 50,
+      "driver": "SQLite",
+      "database": "${workspaceFolder:workouts_page}/run_page/data.db",
+      "name": "data"
+    }
+  ]
+}

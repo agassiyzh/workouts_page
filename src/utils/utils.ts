@@ -24,6 +24,8 @@ import { FeatureCollection, LineString } from 'geojson';
 
 export type Coordinate = [number, number];
 
+export type RunIds = Array<number> | [];
+
 export interface Activity {
   run_id: number;
   name: string;
@@ -37,6 +39,7 @@ export interface Activity {
   average_heartrate?: number;
   average_speed: number;
   streak: number;
+  source: string;
 }
 
 const titleForShow = (run: Activity): string => {

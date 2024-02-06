@@ -162,3 +162,8 @@ cython_debug/
 #.idea/
 node_modules
 public/
+FIT_OUT/
+GPX_OUT/
+src/static/activities.json
+imported.json
+run_page/data.db
