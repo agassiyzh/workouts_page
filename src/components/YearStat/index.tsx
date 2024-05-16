@@ -3,12 +3,12 @@ import Stat from '@/components/Stat';
 import WorkoutStat from '@/components/WorkoutStat';
 import useActivities from '@/hooks/useActivities';
 import { formatPace, colorFromType } from '@/utils/utils';
-import styles from './style.module.scss';
 import useHover from '@/hooks/useHover';
 import { yearStats } from '@assets/index';
 import { loadSvgComponent } from '@/utils/svgUtils';
 
-const YearStat = ({ year, onClick }: { year: string, onClick: (_year: string) => void }) => {
+const YearStat = ({ year, onClick, onClickTypeInYear }: { year: string, onClick: (_year: string) => void ,
+    onClickTypeInYear: (_year: string, _type: string) => void }) => {
   let { activities: runs, years } = useActivities();
   // for hover
   const [hovered, eventHandlers] = useHover();
@@ -54,7 +54,7 @@ const YearStat = ({ year, onClick }: { year: string, onClick: (_year: string) =>
   });
   return (
     <div
-      style={{ cursor: 'pointer' }}
+      className="cursor-pointer"
       onClick={() => onClick(year)}
       {...eventHandlers}
     >
@@ -76,20 +76,24 @@ const YearStat = ({ year, onClick }: { year: string, onClick: (_year: string) =>
             // pace={formatPace(count[2] / count[1])}
             distance={(count[2] / 1000.0).toFixed(0)}
             // color={colorFromType(type)}
+            onClick={(e: Event) => {
+              onClickTypeInYear(year, type);
+              e.stopPropagation();
+            }}
           />
         ))}
         <Stat
           value={`${streak} day`}
           description=" Streak"
-          className="mb0 pb0"
+          className="pb-2"
         />
         {hasHeartRate && (
           <Stat value={avgHeartRate} description=" Avg Heart Rate" />
         )}
       </section>
-      {year !== "Total" && hovered && (
+      {year !== 'Total' && hovered && (
         <Suspense fallback="loading...">
-          <YearSVG className={styles.yearSVG} />
+          <YearSVG className="my-4 h-4/6 w-4/6 border-0 p-0" />
         </Suspense>
       )}
       <hr color="red" />

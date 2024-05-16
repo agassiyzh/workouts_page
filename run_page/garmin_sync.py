@@ -31,7 +31,7 @@ GARMIN_COM_URL_DICT = {
     "MODERN_URL": "https://connectapi.garmin.com",
     "SIGNIN_URL": "https://sso.garmin.com/sso/signin",
     "UPLOAD_URL": "https://connectapi.garmin.com/upload-service/upload/",
-    "ACTIVITY_URL": "https://connectapi.garmin.com/activity-service/activity/{activity_id}",
+    "ACTIVITY_URL": "https://connectapi.garmin.com/activity-service/activity/{}",
 }
 
 GARMIN_CN_URL_DICT = {
@@ -40,12 +40,8 @@ GARMIN_CN_URL_DICT = {
     "MODERN_URL": "https://connectapi.garmin.cn",
     "SIGNIN_URL": "https://sso.garmin.cn/sso/signin",
     "UPLOAD_URL": "https://connectapi.garmin.cn/upload-service/upload/",
-    "ACTIVITY_URL": "https://connectapi.garmin.cn/activity-service/activity/{activity_id}",
+    "ACTIVITY_URL": "https://connectapi.garmin.cn/activity-service/activity/{}",
 }
-
-# set to True if you want to sync all time activities
-# default only sync last 20
-GET_ALL = False
 
 
 class Garmin:
@@ -111,6 +107,19 @@ class Garmin:
         if self.is_only_running:
             url = url + "&activityType=running"
         return await self.fetch_data(url)
+
+    async def get_activity(self, activity_id):
+        """
+        Fetch activity detail
+        """
+        url = self.activity_url.format(activity_id)
+        data = {}
+        try:
+            data = await self.fetch_data(url)
+        except Exception as e:
+            print(f"fetch error: {activity_id} {str(e)}")
+            # just pass for now
+        return data
 
     async def download_activity(self, activity_id, file_type="gpx"):
         url = f"{self.modern_url}/download-service/export/{file_type}/activity/{activity_id}"
@@ -258,22 +267,13 @@ async def download_garmin_data(client, activity_id, file_type="gpx"):
 
 
 async def get_activity_id_list(client, start=0):
-    if GET_ALL:
-        activities = await client.get_activities(start, 100)
-        if len(activities) > 0:
-            ids = list(map(lambda a: str(a.get("activityId", "")), activities))
-            print("Syncing Activity IDs")
-            return ids + await get_activity_id_list(client, start + 100)
-        else:
-            return []
+    activities = await client.get_activities(start, 100)
+    if len(activities) > 0:
+        ids = list(map(lambda a: str(a.get("activityId", "")), activities))
+        print("Syncing Activity IDs")
+        return ids + await get_activity_id_list(client, start + 100)
     else:
-        activities = await client.get_activities(start, 20)
-        if len(activities) > 0:
-            ids = list(map(lambda a: str(a.get("activityId", "")), activities))
-            print(f"Syncing Activity IDs")
-            return ids
-        else:
-            return []
+        return []
 
 
 async def gather_with_concurrency(n, tasks):
@@ -312,6 +312,25 @@ async def download_new_activities(
 
     await client.req.aclose()
     return to_generate_garmin_ids
+
+
+async def get_activities_name(secret_string, auth_domain, new_ids):
+    client = Garmin(secret_string, auth_domain)
+    print(f"{len(new_ids)} new activities detail to be fetch")
+
+    start_time = time.time()
+    returns = await gather_with_concurrency(
+        10,
+        [client.get_activity(id) for id in new_ids],
+    )
+    print(f"Fetch finished. Elapsed {time.time()-start_time} seconds")
+
+    await client.req.aclose()
+    names_mapping = {}
+    for i in returns:
+        if "activityId" in i:
+            names_mapping[i["activityId"]] = i["activityName"]
+    return names_mapping
 
 
 if __name__ == "__main__":

@@ -1,43 +1,23 @@
 name: Run Data Sync
 
 on:
-  workflow_call:
-    inputs:
-      run_type:
-        required: true
-        type: string
-      get_all_garmin_data:
-        description: 'if get all garmin data'
-        required: false
-        default: false
-        type: boolean
   workflow_dispatch:
-    inputs:
-      get_all_garmin_data:
-        description: 'if get all garmin data'
-        required: false
-        default: false
-        type: boolean
-      run_type:
-        description: 'run type'
-        required: true
-        default: 'pass'
-        type: choice
-        options:
-          - strava
-          - nike
-          - garmin
-          - garmin_cn
-          - keep
-          - only_gpx
-          - only_tcx
-          - only_fit
-          - nike_to_strava
-          - strava_to_garmin
-          - strava_to_garmin_cn
-          - garmin_to_strava
-          - garmin_to_strava_cn
-          - codoon
+  schedule:
+    - cron: '0 0 * * *'
+  push:
+    branches:
+      - master
+    paths:
+      - run_page/nike_sync.py
+      - run_page/nike_to_strava_sync.py
+      - run_page/strava_sync.py
+      - run_page/gen_svg.py
+      - run_page/garmin_sync.py
+      - run_page/keep_sync.py
+      - run_page/gpx_sync.py
+      - run_page/tcx_sync.py
+      - run_page/garmin_to_strava_sync.py
+      - requirements.txt
 
 env:
   # please change to your own config.
@@ -115,6 +95,17 @@ jobs:
         if: inputs.run_type == 'keep'
         run: |
           python run_page/keep_sync.py ${{ secrets.KEEP_MOBILE }} ${{ secrets.KEEP_PASSWORD }} --with-gpx
+
+      - name: Run sync Coros script
+        if: env.RUN_TYPE == 'coros'
+        run: |
+          python run_page/coros_sync.py ${{ secrets.COROS_ACCOUNT }} ${{ secrets.COROS_PASSWORD }}
+
+      - name: Run sync Keep_to_strava script
+        if: env.RUN_TYPE == 'keep_to_strava_sync'
+        run: |
+          python run_page/keep_to_strava_sync.py ${{ secrets.KEEP_MOBILE }} ${{ secrets.KEEP_PASSWORD }} ${{ secrets.STRAVA_CLIENT_ID }} ${{ secrets.STRAVA_CLIENT_SECRET }} ${{ secrets.STRAVA_CLIENT_REFRESH_TOKEN }} --sync-types running cycling hiking
+        # If you only want to sync `type running` modify args --sync-types running, default script is to sync all data (rides, hikes and runs).
 
       - name: Run sync Strava script
         if: inputs.run_type == 'strava'

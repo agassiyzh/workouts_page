@@ -1,13 +1,14 @@
 import * as mapboxPolyline from '@mapbox/polyline';
 import gcoord from 'gcoord';
 import { WebMercatorViewport } from 'viewport-mercator-project';
-import { chinaGeojson } from '@/static/run_countries';
+import { chinaGeojson, RPGeometry } from '@/static/run_countries';
+import worldGeoJson from '@surbowl/world-geo-json-zh/world.zh.json';
 import { chinaCities } from '@/static/city';
 import {
+  MAIN_COLOR,
   MUNICIPALITY_CITIES_ARR,
   NEED_FIX_MAP,
   RUN_TITLES,
-  MAIN_COLOR,
   RIDE_COLOR,
   VIRTUAL_RIDE_COLOR,
   HIKE_COLOR,
@@ -31,12 +32,12 @@ export interface Activity {
   name: string;
   distance: number;
   moving_time: string;
-  type: 'Run';
+  type: string;
   start_date: string;
   start_date_local: string;
-  location_country: string;
-  summary_polyline: string;
-  average_heartrate?: number;
+  location_country?: string | null;
+  summary_polyline?: string | null;
+  average_heartrate?: number | null;
   average_speed: number;
   streak: number;
   source: string;
@@ -101,7 +102,7 @@ const scrollToMap = () => {
   }
 };
 
-const pattern = /([\u4e00-\u9fa5]{2,}(市|自治州|特别行政区))/g;
+const pattern = /([\u4e00-\u9fa5]{2,}(市|自治州|特别行政区|盟|地区))/g;
 const extractLocations = (str: string): string[] => {
   const locations = [];
   let match;
@@ -167,6 +168,9 @@ const intComma = (x = '') => {
 
 const pathForRun = (run: Activity): Coordinate[] => {
   try {
+    if (!run.summary_polyline) {
+      return [];
+    }
     const c = mapboxPolyline.decode(run.summary_polyline);
     // reverse lat long for mapbox
     c.forEach((arr) => {
@@ -187,32 +191,39 @@ const geoJsonForRuns = (runs: Activity[]): FeatureCollection<LineString> => ({
 
     return {
       type: 'Feature',
+      properties: {
+        'color': colorFromType(run.type),
+      },
       geometry: {
         type: 'LineString',
         coordinates: points,
         workoutType: run.type,
-      },
-      properties: {
-        'color': colorFromType(run.type),
       },
       name: run.name,
     };
   }),
 });
 
-const geoJsonForMap = () => chinaGeojson;
+const geoJsonForMap = (): FeatureCollection<RPGeometry> => ({
+    type: 'FeatureCollection',
+    features: worldGeoJson.features.concat(chinaGeojson.features),
+  })
 
 const titleForType = (type: string): string => {
   switch (type) {
     case 'Run':
       return RUN_TITLES.RUN_TITLE;
+    case 'Full Marathon':
+      return RUN_TITLES.FULL_MARATHON_RUN_TITLE;
+    case 'Half Marathon':
+      return RUN_TITLES.HALF_MARATHON_RUN_TITLE;
     case 'Trail Run':
       return RUN_TITLES.TRAIL_RUN_TITLE;
     case 'Ride':
       return RUN_TITLES.RIDE_TITLE;
     case 'Indoor Ride':
       return RUN_TITLES.INDOOR_RIDE_TITLE;
-    case 'VirtualRide':
+    case 'Virtual Ride':
       return RUN_TITLES.VIRTUAL_RIDE_TITLE;
     case 'Hike':
       return RUN_TITLES.HIKE_TITLE;
@@ -235,9 +246,56 @@ const titleForType = (type: string): string => {
   }
 }
 
+const typeForRun = (run: Activity): string => {
+  const type = run.type
+  var distance = run.distance / 1000;
+  switch (type) {
+    case 'Run':
+      if (distance >= 40) {
+        return 'Full Marathon';
+      }
+      else if (distance > 20) {
+        return 'Half Marathon';
+      }
+      return 'Run';
+    case 'Trail Run':
+      if (distance >= 40) {
+        return 'Full Marathon';
+      }
+      else if (distance > 20) {
+        return 'Half Marathon';
+      }
+      return 'Trail Run';
+    case 'Ride':
+      return 'Ride';
+    case 'Indoor Ride':
+      return 'Indoor Ride';
+    case 'VirtualRide':
+      return 'Virtual Ride';
+    case 'Hike':
+      return 'Hike';
+    case 'Rowing':
+      return 'Rowing';
+    case 'Swim':
+      return 'Swim';
+    case 'RoadTrip':
+      return 'RoadTrip';
+    case 'Flight':
+      return 'Flight';
+    case 'Kayaking':
+      return 'Kayaking';
+    case 'Snowboard':
+      return 'Snowboard';
+    case 'Ski':
+      return 'Ski';
+    default:
+      return 'Run';
+  }
+}
+
 const titleForRun = (run: Activity): string => {
   const type = run.type;
-  if (type == 'Run'){
+  if (type == 'Run' || type == 'Trail Run'){
       const runDistance = run.distance / 1000;
       if (runDistance >= 40) {
         return RUN_TITLES.FULL_MARATHON_RUN_TITLE;
@@ -365,26 +423,39 @@ const filterCityRuns = (run: Activity, city: string) => {
 const filterTitleRuns = (run: Activity, title: string) =>
   titleForRun(run) === title;
 
-const filterTypeRuns = (run: Activity, type: string) => run.type === type;
+const filterTypeRuns = (run: Activity, type: string) => {
+  switch (type){
+    case 'Full Marathon':
+      return (run.type === 'Run' || run.type === 'Trail Run') && run.distance > 40000
+    case 'Half Marathon':
+      return (run.type === 'Run' || run.type === 'Trail Run') && run.distance < 40000 && run.distance > 20000
+    default:
+      return run.type === type
+  }
+}
 
 const filterAndSortRuns = (
   activities: Activity[],
   item: string,
   filterFunc: (_run: Activity, _bvalue: string) => boolean,
-  sortFunc: (_a: Activity, _b: Activity) => number
+  sortFunc: (_a: Activity, _b: Activity) => number,
+  item2: string | null,
+  filterFunc2: ((_run: Activity, _bvalue: string) => boolean) | null,
 ) => {
   let s = activities;
   if (item !== 'Total') {
     s = activities.filter((run) => filterFunc(run, item));
   }
+  if(filterFunc2 != null && item2 != null){
+    s = s.filter((run) => filterFunc2(run, item2));
+  }
   return s.sort(sortFunc);
 };
 
 const sortDateFunc = (a: Activity, b: Activity) => {
-  // @ts-ignore
   return (
-    new Date(b.start_date_local.replace(' ', 'T')) -
-    new Date(a.start_date_local.replace(' ', 'T'))
+    new Date(b.start_date_local.replace(' ', 'T')).getTime() -
+    new Date(a.start_date_local.replace(' ', 'T')).getTime()
   );
 };
 const sortDateFuncReverse = (a: Activity, b: Activity) => sortDateFunc(b, a);
@@ -400,6 +471,7 @@ export {
   geoJsonForRuns,
   geoJsonForMap,
   titleForRun,
+  typeForRun,
   titleForType,
   filterYearRuns,
   filterCityRuns,

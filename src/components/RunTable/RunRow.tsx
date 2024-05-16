@@ -1,5 +1,5 @@
 import { formatSpeed, formatPace, colorFromType, formatRunTime, Activity, titleForRun, RunIds } from '@/utils/utils';
-import styles from './style.module.scss';
+import styles from './style.module.css';
 import { USE_SPEED } from '@/utils/const';
 
 interface IRunRowProperties {
